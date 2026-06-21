@@ -35,7 +35,7 @@ Repository foundation and GitHub connection are complete. The next phase is defi
 | `38d6b7a` | Initialize OnCue project foundation |
 | `70ae681` | Add OnCue workflow audit history |
 | `c07952c` | Update handoff before GitHub connection |
-| *(this commit)* | Record verified GitHub connection |
+| `fcba73b` | Record verified GitHub connection |
 
 ---
 
