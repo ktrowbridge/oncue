@@ -218,7 +218,7 @@ Next step: <exact action>
 2. Treat it as the current operational state, not as a source of new strategy.
 3. Before replacing it after a meaningful milestone, copy the existing version into `docs/claude-handoff/archive/`.
 4. Use archive filenames in this format: `YYYY-MM-DD-HHMM-short-milestone-name.md`.
-5. Archive only meaningful milestones, not every minor edit. Milestones include: significant feature implementations, major workflow changes, git commits, and any high-risk work.
+5. Archive only meaningful milestones, not every minor edit. Milestones include: significant feature implementations, major workflow changes, git commits, pushes to GitHub, deployments, database migrations, and any high-risk work.
 6. Keep the live handoff concise and action-oriented.
 7. Each archive entry must record:
    - objective or task
