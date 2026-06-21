@@ -46,7 +46,7 @@ No application code, Supabase, or deployment has been configured. No Lovable wor
 
 | Hash | Message | Status |
 | --- | --- |--- |
-| *(pending)* | Add OnCue MVP UX Architecture | local only — not yet pushed |
+| `a283337` | Add OnCue MVP UX Architecture | pushed to `origin/main` |
 
 ---
 
