@@ -50,7 +50,7 @@ No application code. No Lovable project. No Supabase. No deployment.
 
 | Hash | Message | Status |
 |---|---|---|
-| *(pending)* | Apply v3.0 red-team additions to MVP UX Architecture | Local only — not yet committed |
+| `63cb88a` | Apply v3.0 red-team additions to MVP UX Architecture | On GitHub |
 | `e62c204` | Revise MVP UX Architecture with founder decisions | On GitHub |
 
 ---
