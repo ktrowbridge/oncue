@@ -1,6 +1,6 @@
 # OnCue MVP UX Architecture
 
-**Version:** 2.0
+**Version:** 3.0
 **Date:** June 21, 2026
 **Phase:** Pre-implementation — architecture only. No Lovable build has begun.
 **Scope:** MVP required for initial validation on real weddings.
@@ -11,7 +11,7 @@
 
 **Where this document lives:** Repository only — `docs/architecture/mvp-ux-architecture.md`
 
-**Google Drive integration:** This document has not been merged into the authoritative Master Google Docs (`OnCue Master Document V2.gdoc` or `OnCue Founder Decisions Log.gdoc`). Before Lovable implementation begins, the founder should review this document against the current Google Docs and either copy the confirmed content into those docs or confirm they will be updated separately. This document is the working implementation specification; the Master Docs remain the authoritative source of product strategy.
+**Google Drive integration:** The founder has confirmed (Section 9, item D) that the confirmed content of this document must be merged into the authoritative Master Google Docs (`OnCue Master Document V2.gdoc` and `OnCue Founder Decisions Log.gdoc`) before Lovable implementation begins. The Master Docs remain the authoritative source of product strategy. This document is the working implementation specification and must not diverge from them.
 
 **Source documents used to write this:**
 - `OnCue_Master_Strategy_and_Brand_Guardrails.md`
@@ -19,8 +19,9 @@
 - `OnCue_MVP_Specification_and_Roadmap.docx`
 - `docs/FOUNDER_DECISIONS.md`
 - Eleven explicit founder decisions applied in Version 2.0 (June 21, 2026)
+- Ten red-team additions applied in Version 3.0 (June 21, 2026): Review Required workflow, Event Readiness Checklist, comprehensive rollback, Google Drive merge confirmed, What's Changed Since Last Visit, vendor status tracking, emergency contact layer, mobile-first one-handed design rule, required PDF emergency backup, strengthened smart defaults
 
-**Items still requiring founder review before implementation begins are collected in Section 9.**
+**All items in Section 9 are now confirmed. No open questions remain before Lovable implementation.**
 
 ---
 
@@ -30,6 +31,21 @@
 |---|---|---|
 | 1.0 | June 21, 2026 | Initial draft from Master Docs |
 | 2.0 | June 21, 2026 | Applied 11 founder decisions: questionnaire model, family group scope, couple auth, vendor marketing, Wedding Day Mode delay-first design, planner roles, couple PDF, QR codes, pre-fill deferral, custom branding deferral, location sharing plan |
+| 3.0 | June 21, 2026 | Applied 10 red-team additions: Review Required workflow (not formal approval queue); Event Readiness Checklist (7 items, not binary); comprehensive MVP rollback (undo/redo + automatic snapshots + full timeline restore + change log + version comparison); Google Drive merge confirmed; What's Changed Since Last Visit; vendor status tracking (Invited / Viewed / Confirmed); emergency contact layer; mobile-first one-handed as hard design rule; PDF backup required (not optional); smart defaults required for every field. All Section 9 items confirmed. |
+
+---
+
+## Design Principles
+
+These principles govern every screen, every interaction, and every default.
+
+**1. Mobile-first, one-handed.** Every screen is designed for a photographer holding a phone in one hand during a wedding. Touch targets must be large, tap paths must be short, and no critical action requires two hands or precise fine-motor control. Desktop is a planning tool. Mobile is the execution tool.
+
+**2. Smart defaults over configuration.** Every field must have a sensible default. A photographer who fills in nothing beyond event date and couple names must still get a usable baseline timeline. Defaults come from the template; they are overridable, not mandatory.
+
+**3. PDF as required emergency backup.** The printed timeline is not a convenience feature — it is the safety net for the wedding day. OnCue must ensure a PDF backup exists before the event date, and must warn clearly if one has not been downloaded.
+
+**4. Clarity over completeness.** When in doubt, show less. Surface what matters for the current moment. Planning Mode can show more; Execution Mode must show less.
 
 ---
 
@@ -54,13 +70,13 @@
 
 **Trigger:** Photographer books a wedding.
 
-**Desired outcome:** A dependency-aware draft timeline is populated from the wedding template. The questionnaire has been started. The couple has been invited.
+**Desired outcome:** A dependency-aware draft timeline is populated from the wedding template with smart defaults. The questionnaire has been started. The couple has been invited.
 
 **Key screens:**
 1. Dashboard → Create Event
 2. Template selection (Wedding)
 3. Event details (date, couple names, primary location)
-4. Timeline Editor — template pre-populated
+4. Timeline Editor — template pre-populated with smart defaults
 5. Questionnaire — owner begins filling during or after the booking consultation
 6. Invite couple — sends a magic link or Google sign-in invitation
 
@@ -84,13 +100,13 @@
 
 **Trigger:** Timeline is ready for planner or couple review.
 
-**Desired outcome:** Couple and planner have viewed and approved the timeline. PDF backup is downloaded. Event is ready to execute.
+**Desired outcome:** Couple and planner have viewed the timeline. PDF backup is downloaded. Event Readiness Checklist shows all items complete. Event is ready to execute.
 
 **Key screens:**
 1. Timeline Editor — publish / share
-2. Change Review — review all proposed changes (from couple or collaborator)
-3. PDF Export — download compact and filtered versions
-4. Event Readiness check — confirm print backup exists
+2. Change Review — review all couple proposals; see collaborator changes applied under Review Required
+3. PDF Export — download compact and filtered versions (required before event date)
+4. Event Readiness Checklist — confirm each readiness item is met
 
 ---
 
@@ -103,6 +119,7 @@
 **Key screens:**
 1. Wedding Day Mode — compact execution view
 2. Delay adjustment panel — enter delay, see impact, select recovery, choose who to notify
+3. Emergency contacts — accessible in one tap from the main view
 
 ---
 
@@ -116,18 +133,19 @@
 
 **Key screens:**
 1. Invitation email → account sign-in or creation
-2. Timeline Editor — full editing access
-3. Questionnaire — can view and edit (edits from a collaborator-level planner become proposed changes if event settings require owner approval; co-owner edits apply directly)
-4. Change Review — co-owner can approve client or collaborator suggestions; collaborator cannot
-5. Vendor Role management — configure visibility and generate vendor links
-6. Wedding Day Mode — execution view identical to owner's
-7. PDF Export — all formats
+2. What's Changed Since Last Visit — summary of changes since the planner last accessed the event
+3. Timeline Editor — full editing access
+4. Questionnaire — can view and edit; collaborator edits apply immediately under Review Required (owner is notified and can revert); co-owner edits apply directly
+5. Change Review — review couple proposals; co-owner can approve; collaborator can view but not approve
+6. Vendor Role management — configure visibility, track vendor status, generate vendor links
+7. Wedding Day Mode — execution view identical to owner's
+8. PDF Export — all formats
 
 **Distinction from Owner:**
 - Cannot delete the event
 - Cannot manage account billing
-- Collaborator: edits may require owner approval for sensitive changes
-- Co-owner: can approve client and collaborator changes; cannot access account settings
+- Collaborator: edits apply immediately; owner is notified via Review Required; owner can revert in the change log
+- Co-owner: full event authority; can approve couple proposals; cannot access account settings
 
 ---
 
@@ -140,9 +158,14 @@
 **Desired outcome:** Vendor sees only the activities relevant to their role and can print a one-page reference for the day.
 
 **Key screens:**
-1. Vendor link landing — no login required. Lightweight marketing prompt: "Running your own events? Try OnCue free." Vendor can dismiss or claim their free vendor profile.
+1. Vendor link landing — no login required. Lightweight marketing prompt: "Running your own events? Try OnCue free." Vendor can dismiss or claim their free vendor profile. One-tap confirmation: "I've got it" updates vendor status to Confirmed.
 2. Vendor-Filtered Timeline — read-only view of only their relevant activities
 3. PDF Export — one-page filtered view for their role
+
+**Vendor status tracking:** Each vendor link has a status visible to the owner and planner:
+- **Invited** — link generated and shared; vendor has not yet opened it
+- **Viewed** — vendor has opened the link at least once
+- **Confirmed** — vendor has tapped "I've got it" on the vendor link landing (explicit confirmation)
 
 **Vendor sees:**
 - Activity title, start time, duration
@@ -172,13 +195,14 @@
 
 **Key screens:**
 1. Welcome / sign-in — magic link from email or Google sign-in; lands directly in their event
-2. Questionnaire — their sections of the shared questionnaire; can complete and return to update
-3. Timeline Review — simplified read-only view of the timeline
-4. Suggest a Change — inline on any activity; does not modify the live timeline; goes to Change Review
-5. Suggestion status — couple can see whether their suggestions are pending, approved, or declined
+2. What's Changed Since Last Visit — plain-language summary shown when returning after changes have been made (e.g., "Your suggestion to start portraits at 5:30pm was approved.")
+3. Questionnaire — their sections of the shared questionnaire; can complete and return to update
+4. Timeline Review — simplified read-only view of the timeline
+5. Suggest a Change — inline on any activity; does not modify the live timeline; goes to owner review
+6. Suggestion status — couple can see whether their suggestions are pending, approved, or declined
 
 **What the couple can edit:**
-- The questionnaire (their sections) — changes are proposed, not automatic
+- The questionnaire (their sections) — changes are proposals requiring owner approval
 - Suggest timeline changes — proposed changes only
 - Family/group photo participants — proposed changes only
 
@@ -188,7 +212,7 @@
 - See other vendors' contact information
 - Access the full constraint/optimization editor
 
-**Note on couple edits:** Any change made by the couple — to questionnaire answers, suggested timeline edits, family group members, vendor contacts, or key event details — becomes a proposed change that requires owner (or co-owner) approval before it is applied to the live event. This is the universal rule for all non-owner edits.
+**Note on couple changes:** All couple changes — to questionnaire answers, suggested timeline edits, family group members, vendor contacts, or key event details — require owner or co-owner approval before being applied to the live event.
 
 ---
 
@@ -203,10 +227,13 @@
 - Complete or update any part of the questionnaire
 - Edit timeline activities: title, duration, location, anchor type, priority, visibility, dependencies, notes
 - Drag and reorder activities (dependency chain updates accordingly)
+- Undo / redo any change in the current session
+- View automatic snapshots (taken at key milestones); restore or compare to a prior version
+- View the change log and version comparison summary
 - Run the Group Photo Optimizer (family and wedding party groups)
 - Invite planner, couple, and generate vendor links
-- Review and approve proposed changes (from couple, from collaborators)
-- View change history and roll back to a prior version
+- Review couple proposals and approve or decline
+- Review collaborator changes flagged under Review Required; revert if needed
 - Export PDF in any available format
 - Preview any role-filtered view
 
@@ -216,17 +243,26 @@
 - Location assignments and travel blocks
 - Constraint warnings and dependency chain impacts
 - Group photo list with estimated durations and total block time
-- Pending proposed changes (badge count)
-- Change log and publish state
-- Event readiness checklist
+- Pending couple proposals (badge count)
+- Review Required notifications (collaborator changes awaiting owner awareness)
+- Change log, version history, and snapshot list
+- Event Readiness Checklist
 
-**Success criteria:**
-- Timeline accurately reflects the planned day
-- All anchor points are confirmed
-- Group photo sequence is complete and estimated
-- Couple has completed their questionnaire sections
-- At least one PDF backup has been downloaded
-- No critical constraint warnings are unresolved
+**Event Readiness Checklist:**
+
+An event is ready for the wedding day when all of the following are met. Each item shows a checkmark when satisfied and a prompt when not.
+
+| # | Readiness item | How it is met |
+|---|---|---|
+| 1 | Questionnaire is complete | All required questionnaire sections have been filled in |
+| 2 | Group photos are sequenced | Group Photo Optimizer has been run and sequence confirmed |
+| 3 | PDF backup downloaded | At least one compact or full PDF has been downloaded |
+| 4 | No critical constraint warnings | No unresolved anchor threats, chain violations, or duration compressions |
+| 5 | All couple proposals resolved | No pending couple proposals awaiting owner decision |
+| 6 | At least one vendor link shared | At least one vendor has been sent their filtered link |
+| 7 | Emergency contacts entered | At least one emergency contact is recorded in the questionnaire |
+
+The checklist is visible in Planning Mode and as a summary card on the Dashboard event card near the event date. The system warns clearly if the event date is within 7 days and the checklist is not complete.
 
 **When Planning Mode is unavailable:**
 After the event date passes, the event is archived and becomes read-only. Planning Mode is locked. The timeline and questionnaire can be viewed and exported but not edited.
@@ -248,6 +284,7 @@ The central day-of action is not marking activities complete. It is handling del
 - Mark an activity complete (available, but the system does not rely on this — wedding days are too busy)
 - Open the full timeline reference (read-only)
 - Access the pre-downloaded PDF backup (offline-safe)
+- Access emergency contacts — one tap from the main view
 
 **Delay adjustment flow:**
 1. Tap "Running Late"
@@ -266,6 +303,7 @@ The central day-of action is not marking activities complete. It is handling del
 - NEXT: 2–3 upcoming activities (title, time, location)
 - Attention flag: visible when a delay, constraint warning, or missing-person issue exists
 - Recovery options panel (opens when delay is flagged)
+- Emergency contacts (accessible in one tap from the main view; always visible)
 
 **What Execution Mode is not:**
 - Not a drag-and-drop editor
@@ -303,14 +341,18 @@ Event: [Name]
   ├── Timeline          ← Planning Mode editor (default)
   ├── Questionnaire     ← shared event questionnaire
   ├── Group Photos      ← Group Photo Optimizer (family + wedding party)
-  ├── Vendors           ← role assignments, visibility config, link generation
+  ├── Vendors           ← role assignments, vendor status tracking, link generation
   ├── Wedding Day       ← Execution Mode (becomes prominent near event date)
   └── Export            ← PDF: compact, full, vendor-filtered, group-photo-only
 ```
 
+**What's Changed Since Last Visit** appears as a dismissable banner or card when a user returns to an event where changes have been made since their last visit. It lists the most recent changes in plain language. Shown to: owner, planner, and couple. Dismissed by the user or automatically after 24 hours.
+
 ### Change Review (global, not per-tab)
 
-Proposed changes from couple or collaborators appear as a persistent badge across the event. Change Review is accessible from any tab, not buried in one section.
+Pending couple proposals appear as a persistent badge across the event. Change Review is accessible from any tab, not buried in one section.
+
+**Review Required notifications** (for collaborator changes already applied) appear as a separate indicator. The owner reviews these in the change log and can revert if needed.
 
 ### Client / Couple Navigation (after sign-in)
 
@@ -321,22 +363,32 @@ Proposed changes from couple or collaborators appear as a persistent badge acros
   └── Suggestions       ← status of submitted suggestions (pending / approved / declined)
 ```
 
+What's Changed Since Last Visit is shown when the couple returns and something has changed (e.g., a suggestion was approved, the timeline was updated).
+
 ### Vendor View (no sign-in)
 
 ```
 Vendor Link Landing
   ├── [Role]-Filtered Timeline   ← read-only, their activities only
   ├── PDF Download               ← their filtered view
+  ├── "I've got it" confirmation ← one-tap; updates status to Confirmed
   └── Marketing prompt           ← "Running your own events? Try OnCue free." (dismissable)
 ```
 
-### Mobile Considerations
+### Mobile Design Rules
 
-- Wedding Day Mode is the primary mobile interface. Must work one-handed, in bright outdoor light, in portrait or landscape.
-- The delay adjustment panel must be reachable in two taps maximum from the main Wedding Day screen.
-- Planning Mode on mobile collapses to a bottom tab bar. Timeline list is scrollable; detail panel opens as a bottom sheet.
-- All PDF exports must be portrait-oriented and legible when printed from a phone browser.
-- Couple's interface must feel native on a smartphone — they will not use a laptop.
+**One-handed operation is a hard requirement, not a guideline.**
+
+Every action a photographer must take during the wedding day must be completable with one thumb on a phone in portrait mode. Specifically:
+
+- Touch targets minimum 44×44pt
+- Primary action always in the bottom half of the screen
+- Critical actions (Running Late, delay amount, recovery selection) reachable in two taps maximum from the main Wedding Day screen
+- No action requiring simultaneous multi-touch for core workflows
+- Swipe-to-dismiss is supplemental; tap is always the primary path
+- Planning Mode on mobile collapses to a bottom tab bar; timeline list is scrollable; detail panel opens as a bottom sheet
+- All PDF exports must be portrait-oriented and legible when printed from a phone browser
+- Couple's interface must feel native on a smartphone — they will not use a laptop
 
 ### Desktop Considerations
 
@@ -359,7 +411,7 @@ Vendor Link Landing
 
 **Information hierarchy:**
 1. Upcoming events sorted by date (ascending)
-2. Each card: wedding name, date, couple names, status badge (Draft / Active / Day-of / Archived), days-until indicator, pending changes badge
+2. Each card: wedding name, date, couple names, status badge (Draft / Active / Day-of / Archived), days-until indicator, pending proposals badge, vendor status summary (X of Y confirmed), Event Readiness Checklist summary (near event date)
 3. Archived events (collapsed)
 4. Plan status (events remaining on free tier, or current plan)
 
@@ -382,17 +434,19 @@ Vendor Link Landing
 4. Primary location (optional; can be set later)
 5. Create
 
+**Smart defaults on creation:** The wedding template pre-populates a complete baseline sequence with default durations, anchor types, visibility settings, and location placeholders. The owner can begin working immediately without configuring anything. All defaults are labeled and overridable.
+
 **Success metric:** Event opens in Timeline Editor with the wedding template pre-populated within 3 seconds.
 
 ---
 
 ### Screen 3: Questionnaire
 
-**Purpose:** One shared event questionnaire. The owner may begin during a consultation. The couple completes and updates it over time. Any edits made by a non-owner become proposed changes requiring approval.
+**Purpose:** One shared event questionnaire. The owner may begin during a consultation. The couple completes and updates it over time. Any edits made by a non-owner are proposals requiring owner approval.
 
 **Primary action:** Complete or update a section.
 
-**Secondary actions:** Invite couple to complete their sections; mark questionnaire complete; view pending questionnaire change proposals.
+**Secondary actions:** Invite couple to complete their sections; view pending questionnaire proposals.
 
 **Questionnaire sections:**
 
@@ -403,8 +457,9 @@ Vendor Link Landing
 5. **Vendors** — planner, venue, florist, catering, DJ, hair/makeup, videographer, cake, decor; each with name, contact, and arrival time
 6. **Preferences** — ideal portrait location, dream space, important people and moments, emotional priorities
 7. **Priorities** — which moments matter most; which moments are most flexible if time or weather changes
+8. **Emergency contacts** — people to call if something goes wrong on the wedding day. Not limited to the couple. Includes: planner's personal mobile, venue coordinator, family point-of-contact, any on-call vendor contact. Each entry: name, role, phone number. Required for Event Readiness Checklist item 7. Accessible in one tap from Wedding Day Mode.
 
-**Approval behavior:** If the couple or a collaborator edits a questionnaire field, that change is submitted as a proposal. The owner sees a "Questionnaire changes pending" indicator. Approved changes are applied; declined changes are preserved in the log.
+**Approval behavior:** If the couple or a collaborator edits a questionnaire field, that change is submitted as a proposal. The owner sees a "Questionnaire proposals pending" indicator. Approved changes are applied; declined changes are preserved in the log.
 
 **Success metric:** Enough data is collected from the questionnaire to auto-populate location inheritance, travel blocks, and group photo suggestions without manual entry.
 
@@ -416,7 +471,7 @@ Vendor Link Landing
 
 **Primary action:** Add, edit, or reorder activities.
 
-**Secondary actions:** Set anchor type; override location; adjust buffer or minimum duration; preview a role-filtered view; publish or share.
+**Secondary actions:** Set anchor type; override location; adjust buffer or minimum duration; preview a role-filtered view; undo / redo; publish or share.
 
 **Information hierarchy:**
 1. Timeline list — ordered with inline start times, durations, location labels, anchor indicators
@@ -424,7 +479,7 @@ Vendor Link Landing
 3. Travel blocks — inserted automatically between location changes
 4. Constraint warnings — shown inline when an anchor is threatened, a duration is compressed, or a dependency chain is affected
 5. Activity detail panel — opens on selection; shows all fields
-6. Toolbar — add activity, undo, preview view, pending changes count, publish/share
+6. Toolbar — add activity, undo, redo, preview view, pending proposals count, Review Required badge, publish/share
 
 **Success metric:** Owner can move an activity and immediately see which downstream activities shifted, which anchors held, and whether any minimum durations were violated — without leaving this screen.
 
@@ -480,7 +535,7 @@ Vendor Link Landing
 
 ### Screen 7: Vendor Role Management
 
-**Purpose:** Configure what each vendor role can see. Generate and share vendor access links.
+**Purpose:** Configure what each vendor role can see. Generate and share vendor access links. Track vendor status.
 
 **Primary action:** Generate a vendor access link for a specific role.
 
@@ -488,38 +543,49 @@ Vendor Link Landing
 
 **Information hierarchy:**
 1. Role list (Planner, DJ, Videographer, Florist, Hair/Makeup, Venue, Officiant, Custom)
-2. Per role: assigned activities, visibility scope, link status (not sent / sent / viewed)
+2. Per role: assigned activities, visibility scope, vendor status (Invited / Viewed / Confirmed)
 3. Copy link button (QR code is optional and lower priority)
 4. Preview vendor view
 
-**Vendor link landing behavior:** When a vendor opens their link, they see their filtered timeline. Below the timeline (or on a dismissable card) is a lightweight marketing prompt: "Planning your own events? Try OnCue free." The vendor can claim a free vendor profile or dismiss. No account is required to view their timeline.
+**Vendor status definitions:**
+- **Invited** — link generated and shared; vendor has not yet opened it
+- **Viewed** — vendor has opened the link at least once (tracked by link access)
+- **Confirmed** — vendor has tapped "I've got it" on the vendor link landing (explicit confirmation)
 
-**Success metric:** Owner generates a DJ-specific link in under 30 seconds.
+**Vendor link landing behavior:** When a vendor opens their link, they see their filtered timeline. A lightweight marketing prompt is shown: "Planning your own events? Try OnCue free." The vendor can claim a free vendor profile or dismiss. No account is required to view their timeline.
+
+**Success metric:** Owner generates a DJ-specific link in under 30 seconds and can see at a glance which vendors have confirmed receipt.
 
 ---
 
-### Screen 8: Change Review / Approval
+### Screen 8: Review Required / Change Review
 
-**Purpose:** Review all proposed changes — from the couple, from collaborators — in one place. Approve or reject.
+**Purpose:** One place to manage all proposed changes and collaborator activity. Couple proposals require explicit approval before being applied. Collaborator changes (Review Required) have already been applied; owner reviews and can revert.
 
-**Primary action:** Approve or reject a proposed change.
+**Two distinct workflows:**
 
-**Secondary actions:** Edit a proposed change before approving; leave an internal note; batch-approve multiple proposals.
+**Workflow A — Couple proposals (require approval):**
+- Primary action: Approve or reject a proposed change.
+- Secondary actions: Edit a proposed change before approving; leave an internal note; batch-approve multiple proposals.
+- Applies to: all couple changes (timeline suggestions, questionnaire updates, group photo participant additions, vendor contact updates)
+- Change is NOT applied until the owner or co-owner explicitly approves.
 
-**Change types that flow through here:**
-- Couple: suggested timeline edits
-- Couple: questionnaire field updates
-- Couple: group photo participant additions or changes
-- Couple: vendor contact updates
-- Collaborator (if at Collaborator level): changes flagged for approval by event settings
+**Workflow B — Collaborator Review Required (already applied):**
+- Primary action: Review the change log entry.
+- Secondary actions: Revert a change; leave an internal note.
+- Applies to: collaborator timeline edits and questionnaire updates made under Review Required
+- Change is already live. Owner reviews it and can revert if needed. No approval action is required.
 
 **Information hierarchy:**
-1. Pending proposals — most recent first
-2. Each proposal: change type, what changed, original value vs. proposed value, submitted by, submitted at
-3. Approve / Decline / Edit and Approve
-4. Resolved history (collapsed)
+1. Pending couple proposals — most recent first; badge count visible across the event
+2. Each proposal: change type, original value vs. proposed value, submitted by, submitted at
+3. Approve / Decline / Edit and Approve (for couple proposals)
+4. Review Required log — collaborator changes applied since last owner visit; each entry: what changed, who changed it, when; Revert button
+5. Resolved history (collapsed)
 
-**Success metric:** Owner resolves all pending proposals in one session and returns to a clean, approved timeline.
+**What's Changed Since Last Visit** surfaces here as a filtered log view: all changes — approved proposals, collaborator edits, owner edits — since the viewer's last session.
+
+**Success metric:** Owner resolves all pending couple proposals in one session; reviews collaborator changes without a blocking approval step; returns to a clean event state.
 
 ---
 
@@ -529,14 +595,15 @@ Vendor Link Landing
 
 **Primary action:** Handle a delay — enter how many minutes behind, see the impact, choose recovery.
 
-**Secondary actions:** View current and upcoming activities; mark an activity complete (optional, not relied upon); open full timeline reference; access PDF backup.
+**Secondary actions:** View current and upcoming activities; mark an activity complete (optional, not relied upon); open full timeline reference; access PDF backup; access emergency contacts.
 
 **Information hierarchy (compact card layout):**
 1. **NOW** — activity title, location, assigned people, time remaining
 2. **NEXT** — 2–3 upcoming activities (title, time, location — minimal)
 3. **Attention flag** — appears when delay, constraint warning, or missing person is detected
 4. **Running Late button** — prominent, accessible from the main view; one tap to open the delay panel
-5. Full timeline reference link — secondary prominence
+5. **Emergency contacts** — accessible in one tap from the main view; always reachable without navigating away
+6. Full timeline reference link — secondary prominence
 
 **Delay panel hierarchy:**
 1. "How many minutes behind are you?" — quick options: 5 / 10 / 15 / 20 / 30+ / custom
@@ -544,6 +611,8 @@ Vendor Link Landing
 3. Recovery options: 2–4 option cards, each showing what changes and the expected outcome
 4. After selecting recovery: "Who should we notify?" — suggested list of only affected parties; owner can add, remove, or dismiss
 5. Confirm — applies timeline change, sends notifications
+
+**Emergency contacts panel:** Opens from the main Wedding Day Mode view. Shows name, role, and phone number for each contact entered in the questionnaire. One-tap to call. No internet connection required (data loaded when Wedding Day Mode is entered).
 
 **Mark complete behavior:** Exists as a secondary tap action on the current activity. The system does not prompt for it, does not require it, and does not calculate event progress from it. If an activity is marked complete, it is noted in the log. The timeline advances by time, not by completion taps.
 
@@ -553,7 +622,7 @@ Vendor Link Landing
 
 ### Screen 10: PDF Export
 
-**Purpose:** Generate printable backup views of the timeline.
+**Purpose:** Generate printable emergency backup views of the timeline. PDF is the required safety net for the wedding day — it must exist before the event begins.
 
 **Primary action:** Download the selected view as a PDF.
 
@@ -566,9 +635,9 @@ Vendor Link Landing
 4. Group-photo-only — group sequence with required people and estimated durations
 5. Couple's view — activities visible to couple role; available for couple to download from their interface
 
-**Event readiness indicator:** If no PDF backup has been downloaded before the event date, the system shows a warning in Planning Mode. The export screen displays the last download date.
+**PDF is a required emergency backup.** If no PDF has been downloaded before the event date, the system shows a persistent warning in Planning Mode and flags this item as incomplete in the Event Readiness Checklist. The warning does not block usage but is prominent. The export screen displays the last download date and format downloaded.
 
-**Success metric:** Photographer downloads and prints a compact itinerary in one tap. Vendor could follow it without opening a screen.
+**Success metric:** Photographer downloads and prints a compact itinerary in one tap. Vendor could follow it without opening a screen. A PDF exists before the event date in every event that reaches Day-of status.
 
 ---
 
@@ -584,10 +653,11 @@ Vendor Link Landing
 
 **Information hierarchy:**
 1. Welcome card — couple's names, event date, photographer's name
-2. Questionnaire — their sections only; progress indicator; returns to this screen
-3. Timeline review — simplified display (time, activity, location; no internal notes, no constraint data)
-4. "Suggest a change" per activity — opens a simple form; submits to Change Review
-5. My suggestions — list of submitted suggestions and their current status
+2. What's Changed Since Last Visit — shown when returning after changes have been made; plain-language summary (e.g., "Your suggestion to start portraits at 5:30pm was approved." or "The ceremony timeline was updated.")
+3. Questionnaire — their sections only; progress indicator; returns to this screen
+4. Timeline review — simplified display (time, activity, location; no internal notes, no constraint data)
+5. "Suggest a change" per activity — opens a simple form; submits to owner for review
+6. My suggestions — list of submitted suggestions and their current status
 
 **Success metric:** Couple completes their questionnaire sections and reviews the full timeline without contacting the photographer for help.
 
@@ -598,7 +668,7 @@ Vendor Link Landing
 ### Creation Flow
 
 1. Owner creates the event, selects the Wedding template.
-2. Template pre-populates a baseline sequence with estimated durations, priorities, anchor types, and location placeholders.
+2. Template pre-populates a baseline sequence with smart defaults: estimated durations per activity type, anchor types, location placeholders, visibility settings, and priority levels. No configuration required to begin working.
 3. As questionnaire sections are completed, the engine fills in:
    - Location IDs from questionnaire locations
    - Travel blocks auto-inserted when the location changes between activities
@@ -607,6 +677,34 @@ Vendor Link Landing
    - Setup/service activities surfaced from selected vendors (e.g., audio setup if videographer is selected)
 4. Owner reviews, adjusts, and finalizes the timeline.
 5. Constraint engine evaluates the chain and surfaces warnings before the timeline is published or shared.
+
+### Smart Defaults
+
+Every field has a sensible default. A photographer with no prior OnCue experience must be able to use the system from the first event without configuring anything.
+
+| Field | Default behavior |
+|---|---|
+| Duration | Template provides a reasonable estimate per activity type (e.g., 15 min for getting-ready detail shots, 60 min for ceremony, 90 min for portraits). Owner adjusts. |
+| Anchor type | Ceremony is Locked. Getting ready start, first look, and reception start are Preferred. All other activities are Flexible by default. |
+| Location | Inherited from the section's location. Overridden at the activity level when needed. |
+| Priority | Critical for ceremony and first look. Important for reception start, cake cutting, first dances. Flexible for everything else. |
+| Visibility | Couple sees: ceremony, key portrait blocks, reception events. Vendors see: their role-specific activities. Internal notes are owner-only by default. |
+| Travel time | Default estimates by location pair (same-building: 5 min; different address: 15 min). Owner adjusts based on actual knowledge. |
+| Activity order | Template sequence. Owner reorders as needed. |
+
+All defaults are visible, labeled as defaults, and overridable. The system never silently re-applies a default after the owner has manually changed a field.
+
+### Version History and Rollback
+
+OnCue maintains a complete version history for every event timeline. The rollback system has four components:
+
+**1. Undo / redo:** In-session, within the Timeline Editor. Standard undo/redo behavior. Does not persist across sessions.
+
+**2. Automatic snapshots:** Taken at key milestones — timeline publish, PDF download, collaborator invite, first edit after opening the event, and once per hour during an active editing session. Each snapshot is labeled with a timestamp and the triggering action.
+
+**3. Full timeline restore:** Any automatic snapshot can be restored. Restoring replaces the current timeline with the snapshot state. The owner must explicitly confirm before a restore is applied. Restoring creates a new snapshot entry in the log so the action is traceable.
+
+**4. Change log and version comparison summary:** Every change to the timeline — by any user — is recorded in the change log. The version comparison summary shows a before/after diff between any two snapshots: what was added, removed, or modified, and by whom.
 
 ### Interaction Patterns
 
@@ -640,6 +738,7 @@ Vendor Link Landing
 - Sunset and sunrise time calculation from event date and location
 - Constraint warning evaluation
 - Recovery option generation from constraint rules
+- Smart defaults application from template
 
 ### AI-Assisted or Heuristic Intelligence
 
@@ -652,6 +751,7 @@ Vendor Link Landing
 | Behavior | Planning Mode | Execution Mode |
 |---|---|---|
 | Activity editing | Full drag-and-drop editor | Not available |
+| Undo / redo | Available in session | Not available |
 | Constraint warnings | Proactive on every edit | On-demand when delay is flagged |
 | Recovery options | "What if" exploration available | Presented immediately on delay entry |
 | Dependency chain view | Full visualization | Collapsed; immediate next only |
@@ -659,6 +759,7 @@ Vendor Link Landing
 | Group Photo Optimizer | Full editor | View only |
 | Delay handling | Not applicable | Primary feature |
 | Mark complete | Not applicable | Available but not relied upon |
+| Emergency contacts | Accessible in questionnaire | One-tap access from main view |
 
 ---
 
@@ -670,7 +771,7 @@ Vendor Link Landing
 |---|---|
 | Data visibility | Full — all activities, all notes, all people, all vendors |
 | Editing permissions | Full — create, edit, delete, reorder, configure anchors and visibility |
-| Change approval | Full — approves or rejects all proposed changes |
+| Change approval | Full — approves couple proposals; reviews collaborator changes under Review Required |
 | Reporting / export | All PDF formats |
 | Account / billing | Full |
 
@@ -681,8 +782,8 @@ Vendor Link Landing
 | Category | Access |
 |---|---|
 | Data visibility | Full timeline, all vendors, all people |
-| Editing permissions | Can edit all timeline content; sensitive changes (delete, anchor changes) may be flagged for owner approval depending on event settings |
-| Change approval | Cannot approve client changes; own changes may require owner review |
+| Editing permissions | Full timeline editing; changes apply immediately under Review Required (owner is notified and can revert) |
+| Change approval | Cannot approve couple proposals; own changes are logged for owner review |
 | Reporting / export | All PDF formats |
 | Account / billing | None |
 
@@ -692,7 +793,7 @@ Vendor Link Landing
 |---|---|
 | Data visibility | Full timeline, all vendors, all people |
 | Editing permissions | Full — same as owner for event content |
-| Change approval | Can approve client and collaborator proposed changes |
+| Change approval | Can approve couple proposals; own changes apply directly |
 | Reporting / export | All PDF formats |
 | Account / billing | None (account management stays with owner) |
 
@@ -708,6 +809,7 @@ Vendor Link Landing
 | Editing permissions | None — read-only |
 | Reporting / export | Their filtered view as PDF |
 | Account | None required — link-based |
+| Status | Invited / Viewed / Confirmed |
 
 Vendor sees: activity title, start time, duration, location, vendor-facing notes, their checklist items.
 
@@ -724,7 +826,7 @@ Vendor does not see: full timeline, other vendors' activities, questionnaire dat
 | Reporting / export | Couple's filtered PDF view |
 | Account | Lightweight (magic link or Google sign-in) |
 
-Couple sees: activity title, time, location; activities with couple-level visibility; their submitted suggestions and status.
+Couple sees: activity title, time, location; activities with couple-level visibility; their submitted suggestions and status; What's Changed Since Last Visit.
 
 Couple does not see: internal photographer notes, vendor contact details, constraint metadata, Group Photo Optimizer editor.
 
@@ -774,8 +876,10 @@ Treat as a post-MVP feature. Do not build location sharing infrastructure in V1 
 | Lightweight couple sign-in (magic link + Google) | Couples need account access for questionnaire and proposals |
 | Vendor link access (no account) | Required for every wedding — photographers share links with DJs and venues |
 | Vendor link marketing prompt | Low-effort growth mechanism; builds vendor awareness |
-| Event creation with wedding template | Starting point for every event |
+| Vendor status tracking (Invited / Viewed / Confirmed) | Owner must know whether vendors have actually seen their timeline before the wedding day |
+| Event creation with wedding template and smart defaults | Starting point for every event; smart defaults make first use immediate and low-friction |
 | One shared questionnaire (owner fills, couple completes and updates) | Drives group photo optimizer and location intelligence |
+| Emergency contact layer (questionnaire section 8 + one-tap access in Wedding Day Mode) | Safety requirement; required for Event Readiness Checklist |
 | Expanded group photo participants (all relationships, not just immediate family) | Required for accurate optimizer output |
 | Timeline editor: add, edit, reorder activities | Primary product surface |
 | Dependency-aware activity movement | Proves Timeline Intelligence — the primary strategic moat |
@@ -784,17 +888,18 @@ Treat as a post-MVP feature. Do not build location sharing infrastructure in V1 
 | Activity fields: duration, minimum duration, priority, notes, visibility | Required for constraint evaluation |
 | Constraint warnings (anchor, chain, duration, travel) | Without warnings, it is just a list editor |
 | Group Photo Optimizer: auto-suggest, reorder, duration estimate, cross-group tracking | Secondary strategic moat; required for photographer validation |
-| Proposed change workflow (couple and collaborator proposals → owner review) | Fundamental to the collaboration model |
+| Review Required workflow: couple proposals require approval; collaborator edits apply immediately with owner notification and revert option | Fundamental to collaboration model; not a blocking approval queue |
 | Wedding Day Mode with delay adjustment as primary feature | Core day-of experience; must be validated on real weddings |
 | Recovery options presented after delay entry | Required for Timeline Intelligence to be meaningful on the day |
 | Selective notifications (only affected parties, owner approves) | Delay handling is not useful if it spams everyone |
 | Mark activity complete (secondary, not relied upon) | Available for photographers who want it; not a core behavior |
 | Planner roles: Collaborator and Co-owner | Professional collaboration is required for planner market |
-| PDF export: compact, full, vendor-filtered, group-photo-only, couple's view | Print backup is a safety requirement; compact itinerary is core |
+| PDF export: compact, full, vendor-filtered, group-photo-only, couple's view | PDF is the required emergency backup for the wedding day |
 | Couple PDF download from their interface | Confirmed by founder |
-| Event readiness check (backup downloaded?) | Print safety requirement |
-| Version history and basic rollback | Required before photographers trust the system with live events |
-| Change log for proposed and approved changes | Visibility and reversibility are core collaboration principles |
+| PDF download required before event date — Event Readiness Checklist item 3 | Safety requirement; system warns clearly if not downloaded |
+| Event Readiness Checklist (7 items — not binary ready state) | Planning clarity requirement; guides owner through preparation step by step |
+| What's Changed Since Last Visit (owner, planner, couple) | Required for collaboration — all parties need to know what changed since their last visit |
+| Version history: undo/redo + automatic snapshots + full timeline restore + change log + version comparison summary | Required before photographers trust the system with live events |
 | Free tier — 3 lifetime events | Required to control costs during validation |
 
 ---
@@ -833,30 +938,35 @@ Treat as a post-MVP feature. Do not build location sharing infrastructure in V1 
 
 ---
 
-## 9. Founder Review Required Before Implementation
+## 9. Founder Decisions — All Confirmed
 
-The following items require explicit founder confirmation before any Lovable build begins.
+All items below are confirmed. No open questions remain before Lovable implementation.
 
-Items marked **Confirmed** reflect decisions already made in this session. Items marked **Needs answer** are still open.
-
-| # | Question | Status | Notes |
+| # | Decision | Status | Notes |
 |---|---|---|---|
-| 1 | Vendor access is link-based (no account required) | **Confirmed** | Confirmed. Marketing prompt included. |
-| 2 | Couple sign-in is magic link + Google (lightweight, not professional) | **Confirmed** | Confirmed. |
-| 3 | All couple/collaborator changes are proposed changes requiring owner approval | **Confirmed** | Applies to questionnaire, timeline, family groups, vendors, key details. |
-| 4 | Delay adjustment is the primary Wedding Day Mode feature; mark complete is secondary | **Confirmed** | Confirmed. System does not rely on mark complete. |
-| 5 | Planner has two levels: Collaborator and Co-owner | **Confirmed** | Keep simple for MVP. Default to Collaborator when inviting. |
-| 6 | Couple can download their own PDF | **Confirmed** | Confirmed. |
+| 1 | Vendor access is link-based (no account required) | **Confirmed** | Marketing prompt included on vendor link landing. |
+| 2 | Couple sign-in is magic link + Google (lightweight, not professional) | **Confirmed** | No plan selection, credit card, or settings on sign-in. |
+| 3 | All couple changes are proposals requiring owner approval | **Confirmed** | Applies to questionnaire, timeline, family groups, vendors, key details. |
+| 4 | Delay adjustment is the primary Wedding Day Mode feature; mark complete is secondary | **Confirmed** | System does not rely on mark complete. |
+| 5 | Planner has two levels: Collaborator and Co-owner | **Confirmed** | Default to Collaborator when inviting. |
+| 6 | Couple can download their own PDF | **Confirmed** | Available from the couple's interface. |
 | 7 | QR codes are V2, not MVP | **Confirmed** | Unless trivially easy; share links are sufficient for MVP. |
 | 8 | Questionnaire pre-fill from past events is deferred | **Confirmed** | No names or contacts from past events. Section-level guidance is a later feature. |
 | 9 | Custom branding and custom domain are paid V2 features | **Confirmed** | Does not block MVP. |
-| 10 | Location sharing is V2, not MVP | **Confirmed** | Unless implementable without delaying core MVP. Data model should accommodate it. |
+| 10 | Location sharing is V2, not MVP | **Confirmed** | Data model must accommodate it. |
 | 11 | Group Photo Optimizer covers both family and wedding party groupings | **Confirmed** | Questionnaire collects all participants, not just immediate family. |
-| A | **Collaborator approval rules:** For MVP, which specific actions by a Collaborator-level planner require owner approval, and which apply directly? | **Needs answer** | Suggested default: all edits apply directly except delete-event. Owner can see changes in the log. Couple's changes always require approval. Confirm this or define exceptions. |
-| B | **Event readiness definition:** What constitutes a "ready" event? Suggested: questionnaire complete, group photos sequenced, at least one PDF downloaded, no critical constraint warnings. Confirm or modify. | **Needs answer** | This drives the readiness checklist and the warning shown before event date. |
-| C | **Rollback scope:** Does "roll back one version" mean restoring the entire timeline to a prior state, or rolling back individual activities? | **Needs answer** | Full-timeline rollback is simpler to implement but more aggressive. Activity-level rollback is more surgical but more complex. |
-| D | **Google Drive:** Should this architecture document be copied into the Master Google Docs before implementation begins? | **Needs answer** | Recommended: yes. Copy confirmed content into the Master Docs so they remain the authoritative source. The architecture document then becomes the implementation spec, not a competing source of truth. |
+| 12 | Group photo participants expanded to all relationships (extended family, chosen family, VIPs) | **Confirmed** | Not limited to parents and siblings. |
+| A | **Collaborator approval rules:** Collaborator edits apply immediately under Review Required (not a formal approval queue). Owner is notified; can review in the change log and revert. No blocking gate for collaborators. Couple changes always require explicit approval. | **Confirmed** | Review Required is a notification model, not an approval gate. |
+| B | **Event Readiness:** 7-item checklist — not a binary ready/not-ready state. Items: questionnaire complete, groups sequenced, PDF downloaded, no critical warnings, couple proposals resolved, at least one vendor link shared, emergency contacts entered. | **Confirmed** | Checklist drives pre-event preparation. Warning triggered if checklist incomplete within 7 days of event. |
+| C | **Rollback scope:** MVP rollback = undo/redo (in-session) + automatic snapshots (at key milestones) + full timeline restore (with confirmation) + change log (every change, every user) + version comparison summary (before/after diff between any two snapshots). | **Confirmed** | All four components are MVP. Full-timeline restore, not activity-level rollback. |
+| D | **Google Drive:** Architecture must be merged into Master Google Docs before Lovable implementation begins. Founder to copy confirmed content into `OnCue Master Document V2.gdoc` and `OnCue Founder Decisions Log.gdoc`. This document then serves as the implementation spec; Master Docs remain the strategic authority. | **Confirmed** | This is the required next step before Lovable begins. |
+| E | **What's Changed Since Last Visit** is MVP. Shown to owner, planner, and couple when returning to an event after changes have been made. Plain-language summary. Dismissed by the user or auto-dismissed after 24 hours. | **Confirmed** | Required for collaboration awareness across all roles. |
+| F | **Vendor status tracking (Invited / Viewed / Confirmed)** is MVP. Status visible on Vendor Role Management screen and Dashboard event card summary. Confirmed via one-tap on vendor link landing. | **Confirmed** | Owner needs this before the wedding day to know vendors are prepared. |
+| G | **Emergency contact layer** is MVP. Questionnaire section 8. One-tap access in Wedding Day Mode. Data loaded offline when Wedding Day Mode is entered. Required for Event Readiness Checklist item 7. | **Confirmed** | Safety requirement. |
+| H | **Mobile-first, one-handed operation** is a hard design requirement. Every day-of action completable with one thumb. Minimum 44×44pt touch targets. Critical actions in two taps maximum from main Wedding Day screen. | **Confirmed** | Governs all screen and interaction design decisions. |
+| I | **PDF backup is a required emergency backup**, not optional. Persistent warning in Planning Mode if not downloaded before event date. Event Readiness Checklist item 3. Export screen shows last download date. | **Confirmed** | PDF is the safety net for the day. |
+| J | **Smart defaults are required for every field.** A photographer who enters only event date and couple names must get a usable baseline timeline. All defaults are visible, labeled, and overridable. | **Confirmed** | Reduces first-event friction. Builds trust immediately. |
 
 ---
 
-*This document is architecture and definition only. No application code, framework, database schema, or Lovable implementation has been started. Items in Section 9 marked "Needs answer" must be resolved before implementation begins.*
+*This document is architecture and definition only. No application code, framework, database schema, or Lovable implementation has been started. All decisions are confirmed. The required next step before implementation is merging this architecture into the Master Google Docs (item D above).*
